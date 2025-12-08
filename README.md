@@ -1,59 +1,247 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🎯 Laravel 11 – Select2 Multi‑Select Tags with Product CRUD  
+![Laravel](https://img.shields.io/badge/Laravel-11-orange)
+![PHP](https://img.shields.io/badge/PHP-8.2-blue)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5-purple)
+![MySQL](https://img.shields.io/badge/Database-MySQL-yellow)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This documentation explains how to create a **Tags Module** and integrate it with **Product CRUD** using **Select2 Multiple Selection** in Laravel 11.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+# ⭐ Overview
+This project includes:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Full **Tags CRUD Module**
+- Product CRUD with:
+  - Single Image Upload  
+  - Select2 Multi‑Tag Selection  
+  - Display selected tags in product list  
+- Admin Panel layout  
+- Laravel Breeze authentication
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+# 📦 Folder Structure
+```
+project/
+│── app/
+│   ├── Models/Product.php
+│   ├── Models/Tag.php
+│   └── Http/Controllers/
+│       ├── ProductController.php
+│       └── TagController.php
+│
+│── resources/views/
+│       ├── tags/
+│       │    ├── index.blade.php
+│       │    ├── create.blade.php
+│       │    └── edit.blade.php
+│       ├── products/
+│       │    ├── index.blade.php
+│       │    ├── create.blade.php
+│       │    └── edit.blade.php
+│       └── layouts/
+│            ├── admin.blade.php
+│            └── app.blade.php
+│
+│── database/migrations/
+│── public/images/
+│── routes/web.php
+│── README.md
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# 🧱 Step 1 — Install Laravel 11
+```
+composer create-project laravel/laravel example-app
+```
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# 🛠 Step 2 — Configure Database  
+Edit `.env`
+```
+DB_DATABASE=your_db
+DB_USERNAME=root
+DB_PASSWORD=root
+```
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# 🧱 Step 3 — Create Products Table Migration
+```
+php artisan make:migration create_products_table --create=products
+```
+Columns included:  
+- name  
+- details  
+- price  
+- size  
+- color  
+- category  
+- image  
+- **tag_ids (JSON)** – added later  
 
-## Contributing
+Run migration:
+```
+php artisan migrate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+# 📝 Step 4 — Add Resource Route
+```php
+Route::resource('products', ProductController::class);
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+# 🧠 Step 5 — Product Model
+```php
+protected $fillable = [
+    'name','details','image','size','color','category','price','tag_ids'
+];
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+protected $casts = [
+    'tag_ids' => 'array'
+];
+```
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# 🧠 Step 6 — ProductController (Select2 Tags + CRUD)
+
+## ✔ Create Product
+- Fetch tags to show in Select2
+- Validate
+- Upload single image
+- Save selected tags JSON array
+
+## ✔ Update Product
+- Delete old image if replaced
+- Re-save new tag selections
+
+## ✔ Delete Product
+- Remove image from public folder
+- Delete record
+
+---
+
+# 🎨 Step 7 — Product Create Page (Select2 Multi‑Select)
+
+```
+<select name="tag_ids[]" class="form-control select2-tags" multiple>
+    @foreach($tags as $tag)
+        <option value="{{ $tag->id }}">{{ $tag->tag_name }}</option>
+    @endforeach
+</select>
+```
+
+### Initialize Select2
+```js
+$('.select2-tags').select2({
+    placeholder: "Select product tags",
+    allowClear: true,
+    closeOnSelect: true,
+    width: "100%"
+});
+```
+
+---
+
+# 🧱 Step 8 — Create Tags Table
+```
+php artisan make:migration create_tags_table --create=tags
+```
+
+### Migration Fields
+- id  
+- tag_name  
+
+---
+
+# 🧠 Step 9 — Tag Model
+```php
+protected $fillable = ['tag_name'];
+```
+
+---
+
+# 🧠 Step 10 — TagController (Full CRUD)
+Includes:
+✔ index  
+✔ create  
+✔ edit  
+✔ update  
+✔ delete  
+
+---
+
+# 🎨 Step 11 — Tags Blade Pages
+- index.blade.php  
+- create.blade.php  
+- edit.blade.php  
+
+Includes tag list, form, and CRUD UI.
+
+---
+
+# 🖼 Step 12 — Display Tags in Product List
+```php
+$tags = Tag::whereIn('id', $product->tag_ids ?? [])->pluck('tag_name');
+```
+
+```
+@foreach($tags as $tag)
+    <span class="badge bg-info text-dark">{{ $tag }}</span>
+@endforeach
+```
+
+---
+
+# 🧩 Step 13 — Update Admin Layout  
+Added:
+
+- jQuery CDN
+- Bootstrap 5
+- Select2 CSS + JS hooks (via @stack)
+
+---
+
+# 🔐 Step 14 — Add Admin Authentication (Laravel Breeze)
+
+```
+composer require laravel/breeze --dev
+php artisan breeze:install blade
+npm install && npm run dev
+php artisan migrate
+```
+
+Protect product routes:
+```php
+Route::middleware(['auth'])->group(function(){
+    Route::resource('products', ProductController::class);
+});
+```
+
+Set login redirect:
+```
+public const HOME = '/products';
+```
+
+---
+
+# ▶ Run Project
+```
+php artisan serve
+```
+
+Open:
+```
+http://localhost:8000/products
+```
+<img width="676" height="191" alt="image" src="https://github.com/user-attachments/assets/cf9d9e08-d38a-4847-87b6-943d86b1fcf5" />
+<img width="676" height="199" alt="image" src="https://github.com/user-attachments/assets/debd64e8-fd1b-41e1-bcc4-6bf0f281df3c" />
+
+---
