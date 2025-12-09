@@ -1,4 +1,5 @@
-# 🎯 Laravel 11 – Select2 Multi‑Select Tags with Product CRUD  
+ Laravel 11 – Select2 Multi‑Select Tags with Product CRUD 
+ 
 ![Laravel](https://img.shields.io/badge/Laravel-11-orange)
 ![PHP](https://img.shields.io/badge/PHP-8.2-blue)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5-purple)
@@ -8,7 +9,7 @@ This documentation explains how to create a **Tags Module** and integrate it wit
 
 ---
 
-# ⭐ Overview
+ Overview
 This project includes:
 
 - Full **Tags CRUD Module**
@@ -21,7 +22,7 @@ This project includes:
 
 ---
 
-# 📦 Folder Structure
+ Folder Structure
 ```
 project/
 │── app/
@@ -52,14 +53,14 @@ project/
 
 ---
 
-# 🧱 Step 1 — Install Laravel 11
+ Step 1 — Install Laravel 11
 ```
 composer create-project laravel/laravel example-app
 ```
 
 ---
 
-# 🛠 Step 2 — Configure Database  
+ Step 2 — Configure Database  
 Edit `.env`
 ```
 DB_DATABASE=your_db
@@ -69,7 +70,7 @@ DB_PASSWORD=root
 
 ---
 
-# 🧱 Step 3 — Create Products Table Migration
+ Step 3 — Create Products Table Migration
 ```
 php artisan make:migration create_products_table --create=products
 ```
@@ -90,14 +91,14 @@ php artisan migrate
 
 ---
 
-# 📝 Step 4 — Add Resource Route
+ Step 4 — Add Resource Route
 ```php
 Route::resource('products', ProductController::class);
 ```
 
 ---
 
-# 🧠 Step 5 — Product Model
+ Step 5 — Product Model
 ```php
 protected $fillable = [
     'name','details','image','size','color','category','price','tag_ids'
@@ -110,25 +111,25 @@ protected $casts = [
 
 ---
 
-# 🧠 Step 6 — ProductController (Select2 Tags + CRUD)
+ Step 6 — ProductController (Select2 Tags + CRUD)
 
-## ✔ Create Product
+ Create Product
 - Fetch tags to show in Select2
 - Validate
 - Upload single image
 - Save selected tags JSON array
 
-## ✔ Update Product
+ Update Product
 - Delete old image if replaced
 - Re-save new tag selections
 
-## ✔ Delete Product
+ Delete Product
 - Remove image from public folder
 - Delete record
 
 ---
 
-# 🎨 Step 7 — Product Create Page (Select2 Multi‑Select)
+ Step 7 — Product Create Page (Select2 Multi‑Select)
 
 ```
 <select name="tag_ids[]" class="form-control select2-tags" multiple>
@@ -138,7 +139,7 @@ protected $casts = [
 </select>
 ```
 
-### Initialize Select2
+ Initialize Select2
 ```js
 $('.select2-tags').select2({
     placeholder: "Select product tags",
@@ -150,25 +151,25 @@ $('.select2-tags').select2({
 
 ---
 
-# 🧱 Step 8 — Create Tags Table
+ Step 8 — Create Tags Table
 ```
 php artisan make:migration create_tags_table --create=tags
 ```
 
-### Migration Fields
+ Migration Fields
 - id  
 - tag_name  
 
 ---
 
-# 🧠 Step 9 — Tag Model
+ Step 9 — Tag Model
 ```php
 protected $fillable = ['tag_name'];
 ```
 
 ---
 
-# 🧠 Step 10 — TagController (Full CRUD)
+ Step 10 — TagController (Full CRUD)
 Includes:
 ✔ index  
 ✔ create  
@@ -178,7 +179,7 @@ Includes:
 
 ---
 
-# 🎨 Step 11 — Tags Blade Pages
+ Step 11 — Tags Blade Pages
 - index.blade.php  
 - create.blade.php  
 - edit.blade.php  
@@ -187,7 +188,7 @@ Includes tag list, form, and CRUD UI.
 
 ---
 
-# 🖼 Step 12 — Display Tags in Product List
+ Step 12 — Display Tags in Product List
 ```php
 $tags = Tag::whereIn('id', $product->tag_ids ?? [])->pluck('tag_name');
 ```
@@ -200,7 +201,7 @@ $tags = Tag::whereIn('id', $product->tag_ids ?? [])->pluck('tag_name');
 
 ---
 
-# 🧩 Step 13 — Update Admin Layout  
+ Step 13 — Update Admin Layout  
 Added:
 
 - jQuery CDN
@@ -209,7 +210,7 @@ Added:
 
 ---
 
-# 🔐 Step 14 — Add Admin Authentication (Laravel Breeze)
+ Step 14 — Add Admin Authentication (Laravel Breeze)
 
 ```
 composer require laravel/breeze --dev
@@ -232,7 +233,7 @@ public const HOME = '/products';
 
 ---
 
-# ▶ Run Project
+ Run Project
 ```
 php artisan serve
 ```
