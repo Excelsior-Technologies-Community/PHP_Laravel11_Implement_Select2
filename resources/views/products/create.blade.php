@@ -2,88 +2,148 @@
 
 @section('content')
 <div class="container">
-    <h1>Create Product</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fa-solid fa-plus-circle me-2"></i>Create Product</h2>
+        <a href="{{ route('products.index') }}" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-arrow-left me-1"></i> Back</a>
+    </div>
 
-    <!-- Form to create a new product, posts data to 'products.store' route with multipart form data for image upload -->
-    <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-
-        <!-- Product Name input -->
-        <div class="mb-3">
-            <label class="form-label fw-bold">Name</label>
-            <input type="text" name="name" class="form-control" required>
+    @if(session('success'))
+        <div class="alert alert-success d-flex align-items-center shadow-sm mb-3">
+            <i class="fa-solid fa-circle-check me-2"></i>{{ session('success') }}
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
         </div>
+    @endif
 
-        <!-- Product Details textarea -->
-        <div class="mb-3">
-            <label class="form-label fw-bold">Details</label>
-            <textarea name="details" class="form-control" required></textarea>
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data" id="productForm">
+                @csrf
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Product Name</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Category</label>
+                        <input type="text" name="category" class="form-control" list="categoryList" required>
+                        <datalist id="categoryList"></datalist>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Details</label>
+                    <textarea name="details" class="form-control" rows="3" required></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold">Size</label>
+                        <input type="text" name="size" class="form-control" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold">Color</label>
+                        <input type="text" name="color" class="form-control" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold">Price (₹)</label>
+                        <input type="number" name="price" class="form-control" step="0.01" min="0" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Select Tags</label>
+                        <select name="tag_ids[]" class="form-select select2-tags" multiple>
+                            @foreach($tags as $tag)
+                                <option value="{{ $tag->id }}">{{ $tag->tag_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Status</label>
+                        <select name="status" class="form-select">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Product Gallery Images</label>
+                    <input type="file" name="images[]" class="form-control" accept="image/*" multiple>
+                    <div class="form-text">Hold Ctrl/Cmd to select multiple images. Max 2MB each.</div>
+                </div>
+
+                <div class="mb-3" id="imagePreviewContainer"></div>
+
+                <div class="d-flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary px-4"><i class="fa-solid fa-check me-1"></i> Create Product</button>
+                    <a href="{{ route('products.index') }}" class="btn btn-secondary px-4">Cancel</a>
+                </div>
+            </form>
         </div>
-
-        <!-- Multiple select dropdown for Tags -->
-        <div class="mb-3">
-            <label class="form-label fw-bold">Select Tags</label>
-            <select name="tag_ids[]" class="form-control select2-tags" multiple>
-                <!-- Dynamically fill options from $tags passed from controller -->
-                @foreach($tags as $tag)
-                    <option value="{{ $tag->id }}">{{ $tag->tag_name }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <!-- Single image file input for product image -->
-        <div class="mb-3">
-            <label class="form-label fw-bold">Product Image</label>
-            <input type="file" name="image" class="form-control" accept="image/*">
-        </div>
-
-        <!-- Product size text input -->
-        <div class="mb-3">
-            <label class="form-label fw-bold">Size</label>
-            <input type="text" name="size" class="form-control" required>
-        </div>
-
-        <!-- Product color text input -->
-        <div class="mb-3">
-            <label class="form-label fw-bold">Color</label>
-            <input type="text" name="color" class="form-control" required>
-        </div>
-
-        <!-- Product category text input -->
-        <div class="mb-3">
-            <label class="form-label fw-bold">Category</label>
-            <input type="text" name="category" class="form-control" required>
-        </div>
-
-        <!-- Product price number input -->
-        <div class="mb-3">
-            <label class="form-label fw-bold">Price</label>
-            <input type="number" name="price" class="form-control" required>
-        </div>
-
-        <!-- Submit button to create product -->
-        <button type="submit" class="btn btn-primary">Create Product</button>
-        <!-- Back button to return to product list -->
-        <a href="{{ route('products.index') }}" class="btn btn-secondary mt-2">Back</a>
-    </form>
+    </div>
 </div>
 @endsection
 
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+<style>
+    #imagePreviewContainer .preview-item {
+        display: inline-block;
+        margin: 5px;
+        position: relative;
+    }
+    #imagePreviewContainer .preview-item img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 2px solid #dee2e6;
+    }
+</style>
+@endpush
 
 @push('scripts')
-<!-- Include Select2 CSS and JS for enhanced multi-select dropdown UI -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
 <script>
-// Initialize Select2 plugin on the tags multi-select
 $(document).ready(function() {
     $('.select2-tags').select2({
-        placeholder: "Select product tags",
+        placeholder: 'Select product tags',
         allowClear: true,
-        closeOnSelect: true,
-        width: "100%"
+        width: '100%'
+    });
+
+    loadCategories();
+
+    $('input[name="images[]"]').on('change', function() {
+        $('#imagePreviewContainer').empty();
+        const files = this.files;
+        for (let i = 0; i < files.length; i++) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#imagePreviewContainer').append(
+                    '<div class="preview-item">' +
+                    '<img src="' + e.target.result + '" class="rounded">' +
+                    '</div>'
+                );
+            };
+            reader.readAsDataURL(files[i]);
+        }
     });
 });
+
+function loadCategories() {
+    const categories = @json(\App\Models\Product::whereNotNull('category')->distinct()->pluck('category'));
+    const datalist = document.getElementById('categoryList');
+    categories.forEach(function(cat) {
+        const option = document.createElement('option');
+        option.value = cat;
+        datalist.appendChild(option);
+    });
+}
 </script>
 @endpush
