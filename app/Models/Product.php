@@ -4,23 +4,33 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'name',
         'details',
-        'image',     // ✔ SINGLE IMAGE
+        'image',
+        'images',
         'size',
         'color',
         'category',
         'price',
-        'tag_ids',   // ✔ multiple tags JSON
+        'status',
     ];
 
     protected $casts = [
-        'tag_ids' => 'array',   // convert json ↔ array
+        'images' => 'array',
+        'deleted_at' => 'datetime',
     ];
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class)
+            ->withTimestamps();
+    }
 }

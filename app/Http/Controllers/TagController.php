@@ -60,4 +60,24 @@ class TagController extends Controller
         $tag->delete();
         return redirect()->route('tags.index')->with('success', 'Tag deleted successfully!');
     }
+
+    public function select2Search(Request $request)
+    {
+        $term = $request->get('q', '');
+
+        $query = Tag::query();
+
+        if ($term) {
+            $query->where('tag_name', 'like', '%' . $term . '%');
+        }
+
+        $tags = $query->latest()->take(20)->get();
+
+        return response()->json($tags->map(function ($tag) {
+            return [
+                'id' => $tag->id,
+                'text' => $tag->tag_name,
+            ];
+        }));
+    }
 }
