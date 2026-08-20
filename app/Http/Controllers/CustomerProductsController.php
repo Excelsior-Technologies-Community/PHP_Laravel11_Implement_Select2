@@ -10,38 +10,61 @@ class CustomerProductsController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with('tags')
-            ->where('status', 'active');
+        $products = Product::with('tags')
+            ->where('status', 'active')
 
-        if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
-        }
+            ->when($request->filled('tag'), function ($query) use ($request) {
 
-        if ($request->filled('tag')) {
-            $tagId = $request->tag;
-            $query->whereHas('tags', function ($q) use ($tagId) {
-                $q->where('tags.id', $tagId);
-            });
-        }
+                $query->whereHas('tags', function ($tagQuery) use ($request) {
 
-        $products = $query->latest()->paginate(12);
+                    $tagQuery->where('tags.id', $request->tag);
 
-        $tags = Tag::latest()->get();
+                });
 
-        return view('customer.index', compact('products', 'tags'));
+            })
+
+            ->latest()
+            ->paginate(12)
+            ->withQueryString();
+
+        return view('customer.index', compact('products'));
     }
+
 
     public function show(Product $product)
     {
+        abort_if(
+            $product->status !== 'active',
+            404
+        );
+
+        // Load product tags
         $product->load('tags');
-        $relatedProducts = Product::where('category', $product->category)
-            ->where('id', '!=', $product->id)
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Related Products
+        |--------------------------------------------------------------------------
+        | Find other active products from the same category.
+        |--------------------------------------------------------------------------
+        */
+
+        $relatedProducts = Product::with('tags')
             ->where('status', 'active')
-            ->with('tags')
+            ->where('id', '!=', $product->id)
+            ->where('category', $product->category)
             ->latest()
             ->take(4)
             ->get();
 
-        return view('customer.show', compact('product', 'relatedProducts'));
+
+        return view(
+            'customer.show',
+            compact(
+                'product',
+                'relatedProducts'
+            )
+        );
     }
 }
