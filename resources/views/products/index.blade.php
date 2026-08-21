@@ -9,38 +9,46 @@
     ============================================================ --}}
     <div class="page-header mb-4">
 
-        <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <div class="page-icon">
-                    <i class="fa-solid fa-boxes-stacked"></i>
-                </div>
+        <div class="d-flex align-items-center gap-2">
 
-                <div>
-                    <h2 class="fw-bold mb-0">Products</h2>
-
-                    <p class="text-muted mb-0">
-                        Manage your products, tags and availability
-                    </p>
-                </div>
+            <div class="page-icon">
+                <i class="fa-solid fa-boxes-stacked"></i>
             </div>
+
+            <div>
+                <h2 class="fw-bold mb-0">Products</h2>
+
+                <p class="text-muted mb-0">
+                    Advanced product management
+                </p>
+            </div>
+
         </div>
 
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap">
 
+            {{-- EXPORT --}}
+            <a
+                href="{{ route('products.export', request()->query()) }}"
+                class="btn btn-outline-success">
+                <i class="fa-solid fa-file-csv me-1"></i>
+                Export CSV
+            </a>
+
+            {{-- BULK ACTIONS --}}
             <button
                 type="button"
-                class="btn btn-outline-primary px-3"
+                class="btn btn-outline-primary"
                 data-bs-toggle="modal"
-                data-bs-target="#bulkActionsModal"
-            >
+                data-bs-target="#bulkActionsModal">
                 <i class="fa-solid fa-layer-group me-1"></i>
                 Bulk Actions
             </button>
 
+            {{-- ADD PRODUCT --}}
             <a
                 href="{{ route('products.create') }}"
-                class="btn btn-primary px-3"
-            >
+                class="btn btn-primary">
                 <i class="fa-solid fa-plus me-1"></i>
                 Add Product
             </a>
@@ -51,72 +59,53 @@
 
 
     {{-- ============================================================
-        SUCCESS MESSAGE
+        SUCCESS
     ============================================================ --}}
     @if(session('success'))
 
-        <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 mb-4">
+    <div class="alert alert-success alert-dismissible fade show shadow-sm">
 
-            <div class="d-flex align-items-center">
+        <i class="fa-solid fa-circle-check me-2"></i>
 
-                <div class="alert-icon success-icon">
-                    <i class="fa-solid fa-check"></i>
-                </div>
+        {{ session('success') }}
 
-                <div>
-                    <strong>Success!</strong>
-                    <div>{{ session('success') }}</div>
-                </div>
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"></button>
 
-            </div>
-
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="alert"
-            ></button>
-
-        </div>
+    </div>
 
     @endif
 
 
     {{-- ============================================================
-        ERROR MESSAGE
+        ERROR
     ============================================================ --}}
     @if(session('error'))
 
-        <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 mb-4">
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm">
 
-            <div class="d-flex align-items-center">
+        <i class="fa-solid fa-circle-exclamation me-2"></i>
 
-                <div class="alert-icon danger-icon">
-                    <i class="fa-solid fa-exclamation"></i>
-                </div>
+        {{ session('error') }}
 
-                <div>
-                    <strong>Error!</strong>
-                    <div>{{ session('error') }}</div>
-                </div>
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"></button>
 
-            </div>
-
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="alert"
-            ></button>
-
-        </div>
+    </div>
 
     @endif
 
 
     {{-- ============================================================
-        PRODUCT SUMMARY
+        SUMMARY CARDS
     ============================================================ --}}
     <div class="row g-3 mb-4">
 
+        {{-- TOTAL --}}
         <div class="col-md-4">
 
             <div class="summary-card">
@@ -126,6 +115,7 @@
                 </div>
 
                 <div>
+
                     <div class="summary-label">
                         Total Products
                     </div>
@@ -133,6 +123,7 @@
                     <div class="summary-value">
                         {{ $products->total() }}
                     </div>
+
                 </div>
 
             </div>
@@ -140,6 +131,7 @@
         </div>
 
 
+        {{-- ACTIVE --}}
         <div class="col-md-4">
 
             <div class="summary-card">
@@ -149,6 +141,7 @@
                 </div>
 
                 <div>
+
                     <div class="summary-label">
                         Active Products
                     </div>
@@ -156,6 +149,7 @@
                     <div class="summary-value">
                         {{ \App\Models\Product::where('status', 'active')->count() }}
                     </div>
+
                 </div>
 
             </div>
@@ -163,6 +157,7 @@
         </div>
 
 
+        {{-- TAGS --}}
         <div class="col-md-4">
 
             <div class="summary-card">
@@ -172,6 +167,7 @@
                 </div>
 
                 <div>
+
                     <div class="summary-label">
                         Tags
                     </div>
@@ -179,6 +175,7 @@
                     <div class="summary-value">
                         {{ \App\Models\Tag::count() }}
                     </div>
+
                 </div>
 
             </div>
@@ -189,30 +186,331 @@
 
 
     {{-- ============================================================
-        PRODUCT TABLE CARD
+        ADVANCED SEARCH
+    ============================================================ --}}
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white border-0 p-4">
+
+            <div class="d-flex align-items-center gap-2">
+
+                <div class="filter-icon">
+                    <i class="fa-solid fa-filter"></i>
+                </div>
+
+                <div>
+
+                    <h5 class="fw-bold mb-1">
+                        Advanced Product Search
+                    </h5>
+
+                    <small class="text-muted">
+                        Search and filter products by multiple conditions
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body p-4">
+
+            <form
+                method="GET"
+                action="{{ route('products.index') }}">
+
+                <div class="row g-3">
+
+                    {{-- SEARCH --}}
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-semibold">
+                            Search
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text bg-white">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+
+                            <input
+                                type="text"
+                                name="search"
+                                class="form-control"
+                                value="{{ request('search') }}"
+                                placeholder="Search product name, details, category...">
+
+                        </div>
+
+                    </div>
+
+
+                    {{-- CATEGORY --}}
+                    <div class="col-md-3">
+
+                        <label class="form-label fw-semibold">
+                            Category
+                        </label>
+
+                        <select
+                            name="category"
+                            class="form-select">
+
+                            <option value="">
+                                All Categories
+                            </option>
+
+                            @foreach($categories as $category)
+
+                            <option
+                                value="{{ $category }}"
+                                @selected(request('category')==$category)>
+                                {{ $category }}
+                            </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+
+                    {{-- STATUS --}}
+                    <div class="col-md-3">
+
+                        <label class="form-label fw-semibold">
+                            Status
+                        </label>
+
+                        <select
+                            name="status"
+                            class="form-select">
+
+                            <option value="">
+                                All Status
+                            </option>
+
+                            <option
+                                value="active"
+                                @selected(request('status')==='active' )>
+                                Active
+                            </option>
+
+                            <option
+                                value="inactive"
+                                @selected(request('status')==='inactive' )>
+                                Inactive
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    {{-- TAG --}}
+                    <div class="col-md-4">
+
+                        <label class="form-label fw-semibold">
+                            Tag
+                        </label>
+
+                        <select
+                            name="tag"
+                            class="form-select">
+
+                            <option value="">
+                                All Tags
+                            </option>
+
+                            @foreach($tags as $tag)
+
+                            <option
+                                value="{{ $tag->id }}"
+                                @selected(request('tag')==$tag->id)
+                                >
+                                {{ $tag->tag_name }}
+                            </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+
+                    {{-- SORT --}}
+                    <div class="col-md-4">
+
+                        <label class="form-label fw-semibold">
+                            Sort By
+                        </label>
+
+                        <select
+                            name="sort"
+                            class="form-select">
+
+                            <option
+                                value="newest"
+                                @selected(request('sort', 'newest' )==='newest' )>
+                                Newest First
+                            </option>
+
+                            <option
+                                value="oldest"
+                                @selected(request('sort')==='oldest' )>
+                                Oldest First
+                            </option>
+
+                            <option
+                                value="name_asc"
+                                @selected(request('sort')==='name_asc' )>
+                                Name A-Z
+                            </option>
+
+                            <option
+                                value="name_desc"
+                                @selected(request('sort')==='name_desc' )>
+                                Name Z-A
+                            </option>
+
+                            <option
+                                value="price_asc"
+                                @selected(request('sort')==='price_asc' )>
+                                Price Low-High
+                            </option>
+
+                            <option
+                                value="price_desc"
+                                @selected(request('sort')==='price_desc' )>
+                                Price High-Low
+                            </option>
+
+                            <option
+                                value="category_asc"
+                                @selected(request('sort')==='category_asc' )>
+                                Category A-Z
+                            </option>
+
+                            <option
+                                value="category_desc"
+                                @selected(request('sort')==='category_desc' )>
+                                Category Z-A
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    {{-- MIN PRICE --}}
+                    <div class="col-md-2">
+
+                        <label class="form-label fw-semibold">
+                            Min Price
+                        </label>
+
+                        <input
+                            type="number"
+                            name="min_price"
+                            class="form-control"
+                            value="{{ request('min_price') }}"
+                            placeholder="₹ Min"
+                            min="0">
+
+                    </div>
+
+
+                    {{-- MAX PRICE --}}
+                    <div class="col-md-2">
+
+                        <label class="form-label fw-semibold">
+                            Max Price
+                        </label>
+
+                        <input
+                            type="number"
+                            name="max_price"
+                            class="form-control"
+                            value="{{ request('max_price') }}"
+                            placeholder="₹ Max"
+                            min="0">
+
+                    </div>
+
+
+                    {{-- BUTTONS --}}
+                    <div class="col-12">
+
+                        <div class="d-flex gap-2">
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary">
+                                <i class="fa-solid fa-filter me-1"></i>
+                                Apply Filters
+                            </button>
+
+                            <a
+                                href="{{ route('products.index') }}"
+                                class="btn btn-outline-secondary">
+                                <i class="fa-solid fa-rotate-left me-1"></i>
+                                Reset
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    {{-- ============================================================
+        PRODUCT TABLE
     ============================================================ --}}
     <div class="card product-table-card border-0 shadow-sm">
 
-        {{-- TABLE HEADER --}}
+        {{-- HEADER --}}
         <div class="card-header bg-white border-0 p-4">
 
             <div class="d-flex justify-content-between align-items-center">
 
                 <div>
+
                     <h5 class="fw-bold mb-1">
+
                         <i class="fa-solid fa-list me-2 text-primary"></i>
+
                         Product List
+
                     </h5>
 
                     <small class="text-muted">
-                        Showing {{ $products->firstItem() ?? 0 }}
+
+                        Showing
+                        {{ $products->firstItem() ?? 0 }}
                         -
                         {{ $products->lastItem() ?? 0 }}
-                        of {{ $products->total() }} products
+                        of
+                        {{ $products->total() }}
+                        products
+
                     </small>
+
                 </div>
 
-                <div class="selected-count" id="selectedCount">
+
+                <div
+                    class="selected-count"
+                    id="selectedCount">
                     0 selected
                 </div>
 
@@ -230,12 +528,11 @@
 
                     <tr>
 
-                        <th class="checkbox-column">
+                        <th width="45">
                             <input
                                 type="checkbox"
                                 id="selectAll"
-                                class="form-check-input"
-                            >
+                                class="form-check-input">
                         </th>
 
                         <th>Product</th>
@@ -261,289 +558,286 @@
 
                     @forelse($products as $product)
 
-                        <tr>
+                    <tr>
 
-                            {{-- CHECKBOX --}}
-                            <td>
+                        {{-- CHECKBOX --}}
+                        <td>
 
-                                <input
-                                    type="checkbox"
-                                    name="product_ids[]"
-                                    value="{{ $product->id }}"
-                                    class="form-check-input row-check"
-                                >
+                            <input
+                                type="checkbox"
+                                value="{{ $product->id }}"
+                                class="form-check-input row-check">
 
-                            </td>
+                        </td>
 
 
-                            {{-- PRODUCT --}}
-                            <td>
+                        {{-- PRODUCT --}}
+                        <td>
 
-                                <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center">
 
-                                    {{-- PRODUCT IMAGE --}}
-                                    <div class="product-image-wrapper me-3">
+                                {{-- IMAGE --}}
+                                <div class="product-image-wrapper me-3">
 
-                                        @if(!empty($product->images))
+                                    @php
 
-                                            @php
-                                                $firstImage = $product->images[0] ?? null;
-                                            @endphp
+                                    $firstImage = null;
 
-                                            @if($firstImage)
+                                    if (is_array($product->images)) {
+                                    $firstImage = $product->images[0] ?? null;
+                                    }
 
-                                                <img
-                                                    src="{{ asset($firstImage) }}"
-                                                    class="product-image"
-                                                    alt="{{ $product->name }}"
-                                                    onclick="openLightbox('{{ asset($firstImage) }}')"
-                                                >
+                                    @endphp
 
-                                            @else
 
-                                                <div class="product-placeholder">
-                                                    <i class="fa-solid fa-image"></i>
-                                                </div>
+                                    @if($firstImage)
 
-                                            @endif
+                                    <img
+                                        src="{{ asset($firstImage) }}"
+                                        class="product-image"
+                                        alt="{{ $product->name }}"
+                                        onclick="openLightbox('{{ asset($firstImage) }}')">
 
-                                        @elseif($product->image)
+                                    @elseif(!empty($product->image))
 
-                                            <img
-                                                src="{{ asset($product->image) }}"
-                                                class="product-image"
-                                                alt="{{ $product->name }}"
-                                                onclick="openLightbox('{{ asset($product->image) }}')"
-                                            >
-
-                                        @else
-
-                                            <div class="product-placeholder">
-                                                <i class="fa-solid fa-image"></i>
-                                            </div>
-
-                                        @endif
-
-                                    </div>
-
-
-                                    {{-- PRODUCT INFO --}}
-                                    <div class="product-info">
-
-                                        <a
-                                            href="{{ route('products.show', $product) }}"
-                                            class="product-name"
-                                        >
-                                            {{ $product->name }}
-                                        </a>
-
-                                        <div class="product-description">
-
-                                            {{ Str::limit($product->details, 55) }}
-
-                                        </div>
-
-                                        <div class="product-meta">
-
-                                            <span>
-                                                <i class="fa-solid fa-hashtag"></i>
-                                                {{ $product->id }}
-                                            </span>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-
-                            {{-- TAGS --}}
-                            <td>
-
-                                <div class="tags-wrapper">
-
-                                    @forelse($product->tags as $tag)
-
-                                        <span class="product-tag">
-                                            <i class="fa-solid fa-tag me-1"></i>
-                                            {{ $tag->tag_name }}
-                                        </span>
-
-                                    @empty
-
-                                        <span class="no-tags">
-                                            No tags
-                                        </span>
-
-                                    @endforelse
-
-                                </div>
-
-                            </td>
-
-
-                            {{-- CATEGORY --}}
-                            <td>
-
-                                @if($product->category)
-
-                                    <span class="category-badge">
-
-                                        <i class="fa-solid fa-folder me-1"></i>
-
-                                        {{ $product->category }}
-
-                                    </span>
-
-                                @else
-
-                                    <span class="text-muted">
-                                        —
-                                    </span>
-
-                                @endif
-
-                            </td>
-
-
-                            {{-- PRICE --}}
-                            <td>
-
-                                <div class="price">
-
-                                    ₹{{ number_format($product->price, 2) }}
-
-                                </div>
-
-                            </td>
-
-
-                            {{-- STATUS --}}
-                            <td>
-
-                                <form
-                                    action="{{ route('products.toggleStatus', $product) }}"
-                                    method="POST"
-                                    class="status-form"
-                                >
-
-                                    @csrf
-
-                                    @if($product->status === 'active')
-
-                                        <button
-                                            type="submit"
-                                            class="status-badge status-active"
-                                            title="Click to deactivate"
-                                        >
-                                            <span class="status-dot"></span>
-                                            Active
-                                        </button>
+                                    <img
+                                        src="{{ asset($product->image) }}"
+                                        class="product-image"
+                                        alt="{{ $product->name }}"
+                                        onclick="openLightbox('{{ asset($product->image) }}')">
 
                                     @else
 
-                                        <button
-                                            type="submit"
-                                            class="status-badge status-inactive"
-                                            title="Click to activate"
-                                        >
-                                            <span class="status-dot"></span>
-                                            Inactive
-                                        </button>
+                                    <div class="product-placeholder">
+
+                                        <i class="fa-solid fa-image"></i>
+
+                                    </div>
 
                                     @endif
 
-                                </form>
-
-                            </td>
+                                </div>
 
 
-                            {{-- ACTIONS --}}
-                            <td>
+                                {{-- INFO --}}
+                                <div>
 
-                                <div class="action-buttons">
-
-                                    {{-- VIEW --}}
                                     <a
                                         href="{{ route('products.show', $product) }}"
-                                        class="action-btn view-btn"
-                                        title="View Product"
-                                    >
-                                        <i class="fa-solid fa-eye"></i>
+                                        class="product-name">
+                                        {{ $product->name }}
                                     </a>
 
+                                    <div class="product-description">
 
-                                    {{-- EDIT --}}
-                                    <a
-                                        href="{{ route('products.edit', $product) }}"
-                                        class="action-btn edit-btn"
-                                        title="Edit Product"
-                                    >
-                                        <i class="fa-solid fa-pen"></i>
-                                    </a>
+                                        {{ Str::limit($product->details, 60) }}
 
+                                    </div>
 
-                                    {{-- DELETE --}}
-                                    <form
-                                        action="{{ route('products.destroy', $product) }}"
-                                        method="POST"
-                                        class="d-inline"
-                                        onsubmit="return confirm('Are you sure you want to delete this product?')"
-                                    >
+                                    <div class="product-meta">
 
-                                        @csrf
-                                        @method('DELETE')
+                                        <i class="fa-solid fa-hashtag"></i>
 
-                                        <button
-                                            type="submit"
-                                            class="action-btn delete-btn"
-                                            title="Delete Product"
-                                        >
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
+                                        {{ $product->id }}
 
-                                    </form>
+                                    </div>
 
                                 </div>
 
-                            </td>
+                            </div>
 
-                        </tr>
+                        </td>
+
+
+                        {{-- TAGS --}}
+                        <td>
+
+                            <div class="tags-wrapper">
+
+                                @forelse($product->tags as $tag)
+
+                                <span class="product-tag">
+
+                                    <i class="fa-solid fa-tag me-1"></i>
+
+                                    {{ $tag->tag_name }}
+
+                                </span>
+
+                                @empty
+
+                                <span class="no-tags">
+                                    No tags
+                                </span>
+
+                                @endforelse
+
+                            </div>
+
+                        </td>
+
+
+                        {{-- CATEGORY --}}
+                        <td>
+
+                            @if($product->category)
+
+                            <span class="category-badge">
+
+                                <i class="fa-solid fa-folder me-1"></i>
+
+                                {{ $product->category }}
+
+                            </span>
+
+                            @else
+
+                            <span class="text-muted">
+                                —
+                            </span>
+
+                            @endif
+
+                        </td>
+
+
+                        {{-- PRICE --}}
+                        <td>
+
+                            <div class="price">
+
+                                ₹{{ number_format($product->price, 2) }}
+
+                            </div>
+
+                        </td>
+
+
+                        {{-- STATUS --}}
+                        <td>
+
+                            <form
+                                action="{{ route('products.toggleStatus', $product) }}"
+                                method="POST">
+
+                                @csrf
+
+                                @if($product->status === 'active')
+
+                                <button
+                                    type="submit"
+                                    class="status-badge status-active">
+
+                                    <span class="status-dot"></span>
+
+                                    Active
+
+                                </button>
+
+                                @else
+
+                                <button
+                                    type="submit"
+                                    class="status-badge status-inactive">
+
+                                    <span class="status-dot"></span>
+
+                                    Inactive
+
+                                </button>
+
+                                @endif
+
+                            </form>
+
+                        </td>
+
+
+                        {{-- ACTIONS --}}
+                        <td>
+
+                            <div class="action-buttons">
+
+                                {{-- VIEW --}}
+                                <a
+                                    href="{{ route('products.show', $product) }}"
+                                    class="action-btn view-btn"
+                                    title="View">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+
+
+                                {{-- EDIT --}}
+                                <a
+                                    href="{{ route('products.edit', $product) }}"
+                                    class="action-btn edit-btn"
+                                    title="Edit">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+
+
+                                {{-- DELETE --}}
+                                <form
+                                    action="{{ route('products.destroy', $product) }}"
+                                    method="POST"
+                                    class="d-inline"
+                                    onsubmit="return confirm('Move this product to trash?')">
+
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button
+                                        type="submit"
+                                        class="action-btn delete-btn"
+                                        title="Delete">
+
+                                        <i class="fa-solid fa-trash"></i>
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
 
                     @empty
 
-                        <tr>
+                    <tr>
 
-                            <td
-                                colspan="7"
-                                class="empty-state"
-                            >
+                        <td
+                            colspan="7"
+                            class="empty-state">
 
-                                <div class="empty-icon">
-                                    <i class="fa-solid fa-box-open"></i>
-                                </div>
+                            <div class="empty-icon">
 
-                                <h5>
-                                    No Products Found
-                                </h5>
+                                <i class="fa-solid fa-box-open"></i>
 
-                                <p class="text-muted mb-3">
-                                    You haven't added any products yet.
-                                </p>
+                            </div>
 
-                                <a
-                                    href="{{ route('products.create') }}"
-                                    class="btn btn-primary"
-                                >
-                                    <i class="fa-solid fa-plus me-1"></i>
-                                    Add Your First Product
-                                </a>
+                            <h5>
+                                No Products Found
+                            </h5>
 
-                            </td>
+                            <p class="text-muted">
+                                Try changing your search or filters.
+                            </p>
 
-                        </tr>
+                            <a
+                                href="{{ route('products.create') }}"
+                                class="btn btn-primary">
+
+                                <i class="fa-solid fa-plus me-1"></i>
+
+                                Add Product
+
+                            </a>
+
+                        </td>
+
+                    </tr>
 
                     @endforelse
 
@@ -554,32 +848,49 @@
         </div>
 
 
-        {{-- PAGINATION --}}
+        {{-- ========================================================
+            PAGINATION
+        ========================================================= --}}
         @if($products->hasPages())
 
-            <div class="card-footer bg-white border-0 p-4">
+        <div class="card-footer bg-white border-0 p-4">
 
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
 
-                    <div class="text-muted small">
+                <div class="text-muted small">
 
-                        Showing
-                        <strong>{{ $products->firstItem() ?? 0 }}</strong>
-                        -
-                        <strong>{{ $products->lastItem() ?? 0 }}</strong>
-                        of
-                        <strong>{{ $products->total() }}</strong>
-                        products
+                    Showing
 
-                    </div>
+                    <strong>
+                        {{ $products->firstItem() ?? 0 }}
+                    </strong>
 
-                    <div>
-                        {{ $products->links('pagination::bootstrap-5') }}
-                    </div>
+                    -
+
+                    <strong>
+                        {{ $products->lastItem() ?? 0 }}
+                    </strong>
+
+                    of
+
+                    <strong>
+                        {{ $products->total() }}
+                    </strong>
+
+                    products
+
+                </div>
+
+
+                <div>
+
+                    {{ $products->withQueryString()->links('pagination::bootstrap-5') }}
 
                 </div>
 
             </div>
+
+        </div>
 
         @endif
 
@@ -588,15 +899,14 @@
 </div>
 
 
-{{-- ============================================================
+
+{{-- ================================================================
     BULK ACTIONS MODAL
-============================================================ --}}
+================================================================ --}}
 <div
     class="modal fade"
     id="bulkActionsModal"
-    tabindex="-1"
-    aria-hidden="true"
->
+    tabindex="-1">
 
     <div class="modal-dialog modal-dialog-centered">
 
@@ -614,7 +924,7 @@
 
                     </h5>
 
-                    <small class="opacity-75">
+                    <small>
                         Manage multiple products at once
                     </small>
 
@@ -623,8 +933,7 @@
                 <button
                     type="button"
                     class="btn-close btn-close-white"
-                    data-bs-dismiss="modal"
-                ></button>
+                    data-bs-dismiss="modal"></button>
 
             </div>
 
@@ -632,8 +941,7 @@
             <form
                 method="POST"
                 action="{{ route('products.bulkDelete') }}"
-                id="bulkDeleteForm"
-            >
+                id="bulkDeleteForm">
 
                 @csrf
 
@@ -653,90 +961,88 @@
                     <input
                         type="hidden"
                         name="product_ids"
-                        id="bulkProductIds"
-                    >
+                        id="bulkProductIds">
 
 
-                    <div class="d-grid gap-3">
+                    {{-- DELETE --}}
+                    <button
+                        type="submit"
+                        class="bulk-action delete-action mb-3"
+                        onclick="return validateBulkDelete()">
 
-                        {{-- DELETE --}}
-                        <button
-                            type="submit"
-                            class="bulk-action delete-action"
-                            onclick="return validateBulkDelete()"
-                        >
+                        <span class="bulk-action-icon">
 
-                            <span class="bulk-action-icon">
-                                <i class="fa-solid fa-trash"></i>
-                            </span>
+                            <i class="fa-solid fa-trash"></i>
 
-                            <span class="text-start">
+                        </span>
 
-                                <strong>
-                                    Delete Selected
-                                </strong>
+                        <span class="text-start">
 
-                                <small>
-                                    Move selected products to trash
-                                </small>
+                            <strong>
+                                Delete Selected
+                            </strong>
 
-                            </span>
+                            <small>
+                                Move selected products to trash
+                            </small>
 
-                        </button>
+                        </span>
 
-
-                        {{-- DEACTIVATE --}}
-                        <button
-                            type="button"
-                            class="bulk-action deactivate-action"
-                            onclick="bulkStatus('inactive')"
-                        >
-
-                            <span class="bulk-action-icon">
-                                <i class="fa-solid fa-pause"></i>
-                            </span>
-
-                            <span class="text-start">
-
-                                <strong>
-                                    Deactivate Selected
-                                </strong>
-
-                                <small>
-                                    Hide selected products from customers
-                                </small>
-
-                            </span>
-
-                        </button>
+                    </button>
 
 
-                        {{-- ACTIVATE --}}
-                        <button
-                            type="button"
-                            class="bulk-action activate-action"
-                            onclick="bulkStatus('active')"
-                        >
+                    {{-- DEACTIVATE --}}
+                    <button
+                        type="button"
+                        class="bulk-action deactivate-action mb-3"
+                        onclick="bulkStatus('inactive')">
 
-                            <span class="bulk-action-icon">
-                                <i class="fa-solid fa-play"></i>
-                            </span>
+                        <span class="bulk-action-icon">
 
-                            <span class="text-start">
+                            <i class="fa-solid fa-pause"></i>
 
-                                <strong>
-                                    Activate Selected
-                                </strong>
+                        </span>
 
-                                <small>
-                                    Make selected products visible
-                                </small>
+                        <span class="text-start">
 
-                            </span>
+                            <strong>
+                                Deactivate Selected
+                            </strong>
 
-                        </button>
+                            <small>
+                                Set selected products inactive
+                            </small>
 
-                    </div>
+                        </span>
+
+                    </button>
+
+
+                    {{-- ACTIVATE --}}
+                    <button
+                        type="button"
+                        class="bulk-action activate-action"
+                        onclick="bulkStatus('active')">
+
+                        <span class="bulk-action-icon">
+
+                            <i class="fa-solid fa-play"></i>
+
+                        </span>
+
+                        <span class="text-start">
+
+                            <strong>
+                                Activate Selected
+                            </strong>
+
+                            <small>
+                                Set selected products active
+                            </small>
+
+                        </span>
+
+                    </button>
 
                 </div>
 
@@ -749,15 +1055,14 @@
 </div>
 
 
-{{-- ============================================================
+
+{{-- ================================================================
     LIGHTBOX
-============================================================ --}}
+================================================================ --}}
 <div
     class="modal fade"
     id="lightboxModal"
-    tabindex="-1"
-    aria-hidden="true"
->
+    tabindex="-1">
 
     <div class="modal-dialog modal-lg modal-dialog-centered">
 
@@ -769,14 +1074,12 @@
                     src=""
                     id="lightboxImage"
                     class="img-fluid lightbox-image"
-                    alt="Product image"
-                >
+                    alt="Product image">
 
                 <button
                     type="button"
                     class="btn-close lightbox-close"
-                    data-bs-dismiss="modal"
-                ></button>
+                    data-bs-dismiss="modal"></button>
 
             </div>
 
@@ -789,22 +1092,17 @@
 @endsection
 
 
-{{-- ============================================================
+
+{{-- ================================================================
     STYLES
-============================================================ --}}
+================================================================ --}}
 @push('styles')
 
 <link
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    rel="stylesheet"
->
+    rel="stylesheet">
 
 <style>
-
-    /* ------------------------------------------------------------
-       PAGE
-    ------------------------------------------------------------ */
-
     .page-header {
         display: flex;
         justify-content: space-between;
@@ -824,11 +1122,6 @@
         font-size: 20px;
     }
 
-
-    /* ------------------------------------------------------------
-       SUMMARY CARDS
-    ------------------------------------------------------------ */
-
     .summary-card {
         background: #fff;
         border-radius: 14px;
@@ -836,14 +1129,8 @@
         display: flex;
         align-items: center;
         gap: 15px;
-        box-shadow: 0 3px 15px rgba(0,0,0,.05);
+        box-shadow: 0 3px 15px rgba(0, 0, 0, .05);
         border: 1px solid #edf0f4;
-        transition: .2s ease;
-    }
-
-    .summary-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0,0,0,.08);
     }
 
     .summary-icon {
@@ -874,7 +1161,6 @@
     .summary-label {
         color: #6c757d;
         font-size: 13px;
-        margin-bottom: 2px;
     }
 
     .summary-value {
@@ -882,18 +1168,20 @@
         font-weight: 700;
     }
 
-
-    /* ------------------------------------------------------------
-       TABLE
-    ------------------------------------------------------------ */
+    .filter-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: #eef4ff;
+        color: #0d6efd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
     .product-table-card {
         border-radius: 16px;
         overflow: hidden;
-    }
-
-    .table {
-        margin-bottom: 0;
     }
 
     .table thead th {
@@ -913,23 +1201,6 @@
         border-color: #f0f1f3;
     }
 
-    .table tbody tr {
-        transition: background .15s ease;
-    }
-
-    .table tbody tr:hover {
-        background: #fafcff;
-    }
-
-    .checkbox-column {
-        width: 45px;
-    }
-
-
-    /* ------------------------------------------------------------
-       PRODUCT IMAGE
-    ------------------------------------------------------------ */
-
     .product-image-wrapper {
         width: 58px;
         height: 58px;
@@ -943,12 +1214,12 @@
         border-radius: 12px;
         border: 1px solid #e5e7eb;
         cursor: pointer;
-        transition: .2s ease;
+        transition: .2s;
     }
 
     .product-image:hover {
         transform: scale(1.08);
-        box-shadow: 0 5px 15px rgba(0,0,0,.15);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, .15);
     }
 
     .product-placeholder {
@@ -964,17 +1235,10 @@
         border: 1px solid #e5e7eb;
     }
 
-
-    /* ------------------------------------------------------------
-       PRODUCT INFORMATION
-    ------------------------------------------------------------ */
-
     .product-name {
         color: #212529;
         font-weight: 700;
         text-decoration: none;
-        display: inline-block;
-        margin-bottom: 3px;
     }
 
     .product-name:hover {
@@ -992,11 +1256,6 @@
         color: #adb5bd;
         margin-top: 4px;
     }
-
-
-    /* ------------------------------------------------------------
-       TAGS
-    ------------------------------------------------------------ */
 
     .tags-wrapper {
         display: flex;
@@ -1022,11 +1281,6 @@
         font-size: 12px;
     }
 
-
-    /* ------------------------------------------------------------
-       CATEGORY
-    ------------------------------------------------------------ */
-
     .category-badge {
         display: inline-flex;
         align-items: center;
@@ -1039,24 +1293,10 @@
         font-weight: 600;
     }
 
-
-    /* ------------------------------------------------------------
-       PRICE
-    ------------------------------------------------------------ */
-
     .price {
         color: #198754;
         font-weight: 700;
         white-space: nowrap;
-    }
-
-
-    /* ------------------------------------------------------------
-       STATUS
-    ------------------------------------------------------------ */
-
-    .status-form {
-        display: inline-block;
     }
 
     .status-badge {
@@ -1069,11 +1309,6 @@
         align-items: center;
         gap: 6px;
         cursor: pointer;
-        transition: .2s ease;
-    }
-
-    .status-badge:hover {
-        transform: translateY(-1px);
     }
 
     .status-active {
@@ -1093,11 +1328,6 @@
         background: currentColor;
     }
 
-
-    /* ------------------------------------------------------------
-       ACTION BUTTONS
-    ------------------------------------------------------------ */
-
     .action-buttons {
         display: flex;
         justify-content: center;
@@ -1113,7 +1343,6 @@
         justify-content: center;
         border: 1px solid;
         background: transparent;
-        transition: .2s ease;
         text-decoration: none;
         cursor: pointer;
     }
@@ -1148,11 +1377,6 @@
         color: white;
     }
 
-
-    /* ------------------------------------------------------------
-       SELECTED COUNT
-    ------------------------------------------------------------ */
-
     .selected-count {
         background: #f1f5ff;
         color: #0d6efd;
@@ -1161,11 +1385,6 @@
         font-size: 12px;
         font-weight: 600;
     }
-
-
-    /* ------------------------------------------------------------
-       EMPTY STATE
-    ------------------------------------------------------------ */
 
     .empty-state {
         padding: 70px 20px !important;
@@ -1184,36 +1403,6 @@
         font-size: 28px;
         margin: 0 auto 15px;
     }
-
-
-    /* ------------------------------------------------------------
-       ALERTS
-    ------------------------------------------------------------ */
-
-    .alert-icon {
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 12px;
-    }
-
-    .success-icon {
-        background: #d1f3df;
-        color: #198754;
-    }
-
-    .danger-icon {
-        background: #f8d7da;
-        color: #dc3545;
-    }
-
-
-    /* ------------------------------------------------------------
-       BULK MODAL
-    ------------------------------------------------------------ */
 
     .bulk-modal-header {
         background: linear-gradient(135deg, #0d6efd, #3d8bfd);
@@ -1239,23 +1428,6 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        transition: .2s ease;
-    }
-
-    .bulk-action:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 5px 15px rgba(0,0,0,.08);
-    }
-
-    .bulk-action strong {
-        display: block;
-        font-size: 14px;
-    }
-
-    .bulk-action small {
-        display: block;
-        color: #6c757d;
-        margin-top: 2px;
     }
 
     .bulk-action-icon {
@@ -1283,10 +1455,14 @@
         color: #198754;
     }
 
+    .bulk-action strong {
+        display: block;
+    }
 
-    /* ------------------------------------------------------------
-       LIGHTBOX
-    ------------------------------------------------------------ */
+    .bulk-action small {
+        display: block;
+        color: #6c757d;
+    }
 
     .lightbox-content {
         background: #111;
@@ -1302,17 +1478,12 @@
         position: absolute;
         right: 15px;
         top: 15px;
-        background-color: white;
+        background: white;
         padding: 10px;
         z-index: 10;
     }
 
-
-    /* ------------------------------------------------------------
-       RESPONSIVE
-    ------------------------------------------------------------ */
-
-    @media (max-width: 768px) {
+    @media(max-width:768px) {
 
         .page-header {
             flex-direction: column;
@@ -1327,305 +1498,315 @@
             flex: 1;
         }
 
-        .summary-card {
-            padding: 14px;
-        }
-
-        .product-description {
-            max-width: 180px;
-        }
-
     }
-
 </style>
 
 @endpush
 
 
-{{-- ============================================================
+
+{{-- ================================================================
     SCRIPTS
-============================================================ --}}
+================================================================ --}}
 @push('scripts')
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
 
-document.addEventListener('DOMContentLoaded', function () {
+        const selectAll =
+            document.getElementById('selectAll');
 
-    /*
-    |--------------------------------------------------------------------------
-    | Select All
-    |--------------------------------------------------------------------------
-    */
+        const rowChecks =
+            document.querySelectorAll('.row-check');
 
-    const selectAll = document.getElementById('selectAll');
-
-    const rowChecks = document.querySelectorAll('.row-check');
-
-    const selectedCount = document.getElementById('selectedCount');
+        const selectedCount =
+            document.getElementById('selectedCount');
 
 
-    if (selectAll) {
+        /*
+        |--------------------------------------------------------------------------
+        | SELECT ALL
+        |--------------------------------------------------------------------------
+        */
 
-        selectAll.addEventListener('change', function () {
+        if (selectAll) {
 
-            rowChecks.forEach(function (checkbox) {
+            selectAll.addEventListener('change', function() {
 
-                checkbox.checked = selectAll.checked;
+                rowChecks.forEach(function(checkbox) {
+
+                    checkbox.checked =
+                        selectAll.checked;
+
+                });
+
+                updateSelectedCount();
 
             });
 
-            updateSelectedCount();
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | INDIVIDUAL CHECKBOX
+        |--------------------------------------------------------------------------
+        */
+
+        rowChecks.forEach(function(checkbox) {
+
+            checkbox.addEventListener('change', function() {
+
+                updateSelectedCount();
+
+                const checkedCount =
+                    document.querySelectorAll(
+                        '.row-check:checked'
+                    ).length;
+
+                selectAll.checked =
+                    checkedCount === rowChecks.length &&
+                    rowChecks.length > 0;
+
+            });
 
         });
 
-    }
 
+        /*
+        |--------------------------------------------------------------------------
+        | UPDATE COUNT
+        |--------------------------------------------------------------------------
+        */
 
-    /*
-    |--------------------------------------------------------------------------
-    | Individual Checkbox
-    |--------------------------------------------------------------------------
-    */
+        function updateSelectedCount() {
 
-    rowChecks.forEach(function (checkbox) {
+            const count =
+                document.querySelectorAll(
+                    '.row-check:checked'
+                ).length;
 
-        checkbox.addEventListener('change', function () {
+            selectedCount.textContent =
+                count + ' selected';
 
-            updateSelectedCount();
+        }
 
-            const checkedCount =
-                document.querySelectorAll('.row-check:checked').length;
 
-            selectAll.checked =
-                checkedCount === rowChecks.length &&
-                rowChecks.length > 0;
+        /*
+        |--------------------------------------------------------------------------
+        | BULK MODAL
+        |--------------------------------------------------------------------------
+        */
 
-        });
+        const bulkModal =
+            document.getElementById(
+                'bulkActionsModal'
+            );
 
-    });
+        if (bulkModal) {
 
+            bulkModal.addEventListener(
+                'show.bs.modal',
+                function() {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Update Selected Count
-    |--------------------------------------------------------------------------
-    */
+                    const ids =
+                        getSelectedIds();
 
-    function updateSelectedCount() {
+                    document.getElementById(
+                            'bulkSelectedText'
+                        ).textContent =
+                        ids.length +
+                        (ids.length === 1 ?
+                            ' product selected' :
+                            ' products selected');
 
-        const count =
-            document.querySelectorAll('.row-check:checked').length;
+                    document.getElementById(
+                            'bulkProductIds'
+                        ).value =
+                        ids.join(',');
 
-        selectedCount.textContent =
-            count + (count === 1 ? ' selected' : ' selected');
-
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Bulk Modal
-    |--------------------------------------------------------------------------
-    */
-
-    const bulkModal =
-        document.getElementById('bulkActionsModal');
-
-    if (bulkModal) {
-
-        bulkModal.addEventListener('show.bs.modal', function () {
-
-            const ids = getSelectedIds();
-
-            document.getElementById('bulkSelectedText').textContent =
-                ids.length +
-                (ids.length === 1
-                    ? ' product selected'
-                    : ' products selected');
-
-            document.getElementById('bulkProductIds').value =
-                ids.join(',');
-
-        });
-
-    }
-
-});
-
-
-/*
-|--------------------------------------------------------------------------
-| Get Selected Product IDs
-|--------------------------------------------------------------------------
-*/
-
-function getSelectedIds() {
-
-    const ids = [];
-
-    document
-        .querySelectorAll('.row-check:checked')
-        .forEach(function (checkbox) {
-
-            ids.push(checkbox.value);
-
-        });
-
-    return ids;
-}
-
-
-/*
-|--------------------------------------------------------------------------
-| Validate Bulk Delete
-|--------------------------------------------------------------------------
-*/
-
-function validateBulkDelete() {
-
-    const ids = getSelectedIds();
-
-    if (ids.length === 0) {
-
-        alert('Please select at least one product.');
-
-        return false;
-
-    }
-
-    document.getElementById('bulkProductIds').value =
-        ids.join(',');
-
-    return confirm(
-        'Are you sure you want to delete the selected products?'
-    );
-
-}
-
-
-/*
-|--------------------------------------------------------------------------
-| Bulk Status
-|--------------------------------------------------------------------------
-*/
-
-function bulkStatus(status) {
-
-    const ids = getSelectedIds();
-
-    if (ids.length === 0) {
-
-        alert('Please select at least one product.');
-
-        return;
-
-    }
-
-
-    const statusText =
-        status === 'active'
-            ? 'activate'
-            : 'deactivate';
-
-
-    if (!confirm(
-        'Are you sure you want to ' +
-        statusText +
-        ' the selected products?'
-    )) {
-
-        return;
-
-    }
-
-
-    fetch('{{ route('products.bulkStatus') }}', {
-
-        method: 'POST',
-
-        headers: {
-
-            'Content-Type': 'application/json',
-
-            'X-CSRF-TOKEN':
-                '{{ csrf_token() }}'
-
-        },
-
-        body: JSON.stringify({
-
-            product_ids: ids,
-
-            status: status
-
-        })
-
-    })
-
-    .then(function (response) {
-
-        if (!response.ok) {
-
-            throw new Error(
-                'Something went wrong.'
+                }
             );
 
         }
 
-        return response.json().catch(function () {
-            return {};
-        });
-
-    })
-
-    .then(function () {
-
-        window.location.reload();
-
-    })
-
-    .catch(function (error) {
-
-        console.error(error);
-
-        alert(
-            'Unable to update product status.'
-        );
-
     });
 
-}
+
+    /*
+    |--------------------------------------------------------------------------
+    | GET SELECTED IDS
+    |--------------------------------------------------------------------------
+    */
+
+    function getSelectedIds() {
+
+        const ids = [];
+
+        document
+            .querySelectorAll('.row-check:checked')
+            .forEach(function(checkbox) {
+
+                ids.push(checkbox.value);
+
+            });
+
+        return ids;
+
+    }
 
 
-/*
-|--------------------------------------------------------------------------
-| Lightbox
-|--------------------------------------------------------------------------
-*/
+    /*
+    |--------------------------------------------------------------------------
+    | BULK DELETE
+    |--------------------------------------------------------------------------
+    */
 
-function openLightbox(src) {
+    function validateBulkDelete() {
 
-    document.getElementById(
-        'lightboxImage'
-    ).src = src;
+        const ids =
+            getSelectedIds();
 
+        if (ids.length === 0) {
 
-    const modalElement =
+            alert(
+                'Please select at least one product.'
+            );
+
+            return false;
+
+        }
+
         document.getElementById(
-            'lightboxModal'
+                'bulkProductIds'
+            ).value =
+            ids.join(',');
+
+        return confirm(
+            'Are you sure you want to delete the selected products?'
         );
 
-
-    const modal =
-        bootstrap.Modal.getOrCreateInstance(
-            modalElement
-        );
+    }
 
 
-    modal.show();
+    /*
+    |--------------------------------------------------------------------------
+    | BULK STATUS
+    |--------------------------------------------------------------------------
+    */
 
-}
+    function bulkStatus(status) {
 
+        const ids =
+            getSelectedIds();
+
+        if (ids.length === 0) {
+
+            alert(
+                'Please select at least one product.'
+            );
+
+            return;
+
+        }
+
+        const text =
+            status === 'active' ?
+            'activate' :
+            'deactivate';
+
+        if (!confirm(
+                'Are you sure you want to ' +
+                text +
+                ' the selected products?'
+            )) {
+
+            return;
+
+        }
+
+
+        fetch(
+                '{{ route("products.bulkStatus") }}', {
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+
+                    },
+
+                    body: JSON.stringify({
+
+                        product_ids: ids,
+
+                        status: status
+
+                    })
+
+                }
+            )
+            .then(function(response) {
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        'Something went wrong.'
+                    );
+
+                }
+
+                return response.json();
+
+            })
+            .then(function() {
+
+                window.location.reload();
+
+            })
+            .catch(function(error) {
+
+                console.error(error);
+
+                alert(
+                    'Unable to update product status.'
+                );
+
+            });
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | LIGHTBOX
+    |--------------------------------------------------------------------------
+    */
+
+    function openLightbox(src) {
+
+        document.getElementById(
+            'lightboxImage'
+        ).src = src;
+
+
+        const modalElement =
+            document.getElementById(
+                'lightboxModal'
+            );
+
+
+        const modal =
+            bootstrap.Modal.getOrCreateInstance(
+                modalElement
+            );
+
+
+        modal.show();
+
+    }
 </script>
 
 @endpush
