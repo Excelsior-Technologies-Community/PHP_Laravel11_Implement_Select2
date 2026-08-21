@@ -26,6 +26,7 @@ class Product extends Model
     protected $casts = [
         'images' => 'array',
         'deleted_at' => 'datetime',
+        'price' => 'decimal:2',
     ];
 
     public function tags(): BelongsToMany
